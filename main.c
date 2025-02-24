@@ -116,8 +116,7 @@ int main(void) {
     uart_send_string("Starting encoder capture...\r\n");
 
     char buffer[64];
-    uint32_t period, high_time, encoder_value;
-
+    uint32_t period, high_time;
     float duty_cycle, angle;
 
     while (1) {
@@ -137,13 +136,13 @@ int main(void) {
             high_time = TIM3->CCR2;  // Captured high time (pulse width)
 
             if (period != 0) {
-                // Calculate raw 14-bit value (0 to 16383) based on the PWM duty cycle.
-                encoder_value = (high_time * 16383UL) / period;
+                duty_cycle = (float)high_time / (float)period;
+                angle = duty_cycle * 360.0f;
             } else {
-                encoder_value = 0;
+                angle = 0.0f;
             }
 
-            sprintf(buffer, "Encoder Value: %lu\r\n", encoder_value);
+            sprintf(buffer, "AngleMeow: %d degrees\r\n", (int)angle);
             uart_send_string(buffer);
         }
 
